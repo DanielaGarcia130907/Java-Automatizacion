@@ -4,35 +4,27 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import cucumberTesting.objects.paginaObjects;
+
+import cucumberTesting.objects.PaginaObjects;
 import cucumberTesting.utilities.ActionsUtil;
 import net.thucydides.core.annotations.DefaultUrl;
 
-@DefaultUrl("https://es-la.facebook.com")
-public class paginaPage extends BasePage {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(paginaPage.class);
+@DefaultUrl("https://amrs-dev.engkantar.com/#/login")
+public class PaginaPage extends BasePage {
 
-	public paginaPage() {
+	private static final Logger LOGGER = LoggerFactory.getLogger(PaginaPage.class);
+
+	public PaginaPage() {
 		if (ActionsUtil.objetosIsEmpty()) {
 			LOGGER.info("Inicialización de objetos");
-			new paginaObjects();
+			new PaginaObjects();
 		}
 	}
 
 	public void verificarVisible(String elemento) {
 		sharedObjet(elemento);
 		ActionsUtil.verificarVisible(getDriver(), getObjetoToAction());
-
-	}
-	
-	public void login() {
-		sharedObjet("Usuario");
-		ActionsUtil.setTextField(getDriver(), getObjetoToAction(), "testqa");
-		sharedObjet("Contrasena");
-		ActionsUtil.setTextField(getDriver(), getObjetoToAction(), "#testqa@");
-		sharedObjet("botonlogin");
-		ActionsUtil.clic(getDriver(), getObjetoToAction());
 
 	}
 

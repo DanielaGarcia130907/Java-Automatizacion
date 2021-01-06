@@ -21,7 +21,6 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.commons.io.FileUtils;
 import org.hamcrest.CoreMatchers;
-import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.JavascriptExecutor;
@@ -38,6 +37,8 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+
+
 public class ActionsUtil {
 
 	// Expresiones Regulares para los features \"([^\"]*)\" (\\d+) \"(.*?)\"
@@ -45,8 +46,6 @@ public class ActionsUtil {
 	private ActionsUtil() {
 		throw new IllegalStateException("Utility class");
 	}
-
-	private static final long ELEMENT_TO_BE_CLICKABLE = 60L;
 
 	static HashMap<String, By> objetosPage = new HashMap<String, By>();
 	static PropertiesLoader properties = PropertiesLoader.getInstance();
@@ -147,12 +146,12 @@ public class ActionsUtil {
 		driver.manage().timeouts().setScriptTimeout(240, TimeUnit.SECONDS);
 		String currentURL = driver.getCurrentUrl();
 		if (!text.isEmpty() && !text.equals(currentURL)) {
-			for (int i = 0; i < 3; i++) {
+			for(int i=0;i<3;i++) {
 				try {
 					driver.navigate().to(text);
 					break;
-				} catch (Exception e) {
-					LOGGER.info("Exception NAVIGATE TO " + text + " Error:" + e);
+				}catch(Exception e) {
+					LOGGER.info("Exception NAVIGATE TO " +text+" Error:"+e);
 				}
 			}
 		}
@@ -180,8 +179,6 @@ public class ActionsUtil {
 		}
 		if (ActionsUtil.textoMinusculasSinEspacios(tecla).equalsIgnoreCase("f5")) {
 			element.sendKeys(Keys.F5);
-		} else if (ActionsUtil.textoMinusculasSinEspacios(tecla).equalsIgnoreCase("enter")) {
-			element.sendKeys(Keys.ENTER);
 		} else if (ActionsUtil.textoMinusculasSinEspacios(tecla).equalsIgnoreCase("backspace")) {
 			element.sendKeys(Keys.BACK_SPACE);
 		} else if (ActionsUtil.textoMinusculasSinEspacios(tecla).equalsIgnoreCase("inicio")) {
@@ -404,20 +401,11 @@ public class ActionsUtil {
 		}
 	}
 
-	public static void removeAttribute(WebDriver driver, By by, String atributo) {
-		WebElement element = driver.findElement(by);
-		String originalClass = element.getAttribute(atributo);
-		String comandoExecute = "arguments[0].removeAttribute('" + atributo + "');";
-		JavascriptExecutor js = (JavascriptExecutor) driver;
-		js.executeScript(comandoExecute, element, originalClass);
-		sleepMiliseconds(5);
-	}
-
 	public static void clic(WebDriver driver, By by) {
 		highlightElement(driver, by);
-		if (driver.findElements(by).size() > 1) {
+		if(driver.findElements(by).size()>1) {
 			clicIfDisplayed(driver, by);
-		} else {
+		}else {
 			WebElement element = driver.findElement(by);
 			element.click();
 		}
@@ -614,7 +602,7 @@ public class ActionsUtil {
 	}
 
 	public static void sleepSeconds(int sleep) {
-		sleepMiliseconds(2000L * sleep);
+		sleepMiliseconds(1000L * sleep);
 	}
 
 	public static void sleepMiliseconds(long timeMiliSeconds) {
@@ -944,7 +932,7 @@ public class ActionsUtil {
 	public static void validarEstilo(WebDriver driver, By by, String estilo) {
 		WebElement element = driver.findElement(by);
 		String style = element.getAttribute("style");
-		assertFalse(style + " no contiene: " + estilo, style.trim().contains(estilo));
+		assertFalse(style + " no contiene: " + estilo,style.trim().contains(estilo));
 	}
 
 	public static void verificarVisible(WebDriver driver, By objetoToAction) {
@@ -952,48 +940,14 @@ public class ActionsUtil {
 		assertTrue(element.isDisplayed());
 	}
 
-	public static void invisibleListaBy(WebDriver driver, By cargando) {
-		driver.manage().timeouts().implicitlyWait(10000, TimeUnit.MILLISECONDS);
-		WebDriverWait wait = new WebDriverWait(driver, 100);
-		try {
-			List<WebElement> elemento = driver.findElements(cargando);
-			wait.until(ExpectedConditions.invisibilityOfAllElements(elemento));
-		} catch (Exception e) {
-			LOGGER.error("Error en invisibleListaBy():" + e.getMessage());
-		}
-
-		driver.manage().timeouts().implicitlyWait(TIMEOUTS, TimeUnit.MILLISECONDS);
-
-	}
-
-	public static void cargandoFrameInterno(WebDriver driver) {
-
-		try {
-			// long inicio = System.currentTimeMillis();
-			driver.manage().timeouts().implicitlyWait(20000, TimeUnit.MILLISECONDS);
-			WebElement cargando = driver.findElement(By.xpath("//table[@id='ph_tabCGrupo_tabPGrupo_gvGrupos']"));
-			driver.manage().timeouts().implicitlyWait(TIMEOUTS, TimeUnit.MILLISECONDS);
-			// long fin = System.currentTimeMillis();
-			// long tiempo = fin - inicio;
-			// LOGGER.info("cargandoFrameInterno:encontrado " + tiempo + " milisegundos");
-			// inicio = System.currentTimeMillis();
-			WebDriverWait wait = new WebDriverWait(driver, ELEMENT_TO_BE_CLICKABLE);
-			wait.until(ExpectedConditions.invisibilityOf(cargando));
-			// fin = System.currentTimeMillis();
-			// tiempo = fin - inicio;
-			// LOGGER.info("cargandoFrameInterno:invisible " + tiempo + " milisegundos");
-		} catch (Exception e) {
-			LOGGER.info("cargandoFrameInterno:no se presento cargando");
-		} finally {
-			driver.manage().timeouts().implicitlyWait(TIMEOUTS, TimeUnit.MILLISECONDS);
-		}
-
-	}
-
-	public static void aceptarPopup(WebDriver driver) {
-		WebDriverWait wait = new WebDriverWait(driver, 30);
-		Alert alert = wait.until(ExpectedConditions.alertIsPresent());
-		alert.accept();
+	public static void removeAttribute(WebDriver driver, By by, String atributo) {
+		WebElement element = driver.findElement(by);
+		String originalClass = element.getAttribute(atributo);
+		String comandoExecute = "arguments[0].removeAttribute('" + atributo + "');";
+		JavascriptExecutor js = (JavascriptExecutor) driver;
+		js.executeScript(comandoExecute, element, originalClass);
+		sleepMiliseconds(5);
+		
 	}
 
 }
