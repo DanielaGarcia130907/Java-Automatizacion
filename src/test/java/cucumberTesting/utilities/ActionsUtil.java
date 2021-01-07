@@ -5,7 +5,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.io.File;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -19,14 +21,11 @@ import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
-import org.apache.commons.io.FileUtils;
 import org.hamcrest.CoreMatchers;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
-import org.openqa.selenium.OutputType;
-import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
@@ -36,8 +35,6 @@ import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-
 
 public class ActionsUtil {
 
@@ -146,12 +143,12 @@ public class ActionsUtil {
 		driver.manage().timeouts().setScriptTimeout(240, TimeUnit.SECONDS);
 		String currentURL = driver.getCurrentUrl();
 		if (!text.isEmpty() && !text.equals(currentURL)) {
-			for(int i=0;i<3;i++) {
+			for (int i = 0; i < 3; i++) {
 				try {
 					driver.navigate().to(text);
 					break;
-				}catch(Exception e) {
-					LOGGER.info("Exception NAVIGATE TO " +text+" Error:"+e);
+				} catch (Exception e) {
+					LOGGER.info("Exception NAVIGATE TO " + text + " Error:" + e);
 				}
 			}
 		}
@@ -403,9 +400,9 @@ public class ActionsUtil {
 
 	public static void clic(WebDriver driver, By by) {
 		highlightElement(driver, by);
-		if(driver.findElements(by).size()>1) {
+		if (driver.findElements(by).size() > 1) {
 			clicIfDisplayed(driver, by);
-		}else {
+		} else {
 			WebElement element = driver.findElement(by);
 			element.click();
 		}
@@ -478,12 +475,6 @@ public class ActionsUtil {
 		new Select(element).selectByValue(valueOption);
 	}
 
-	public static void compareText(WebDriver driver, By by, String valorEsperado) {
-		String valorObtenido = getText(driver, by);
-		valorEsperado = valorEsperado.replace("\\\"", "\"");
-		LOGGER.info("Compara los valores valorEsperado: " + valorEsperado + " valorObtenido: " + valorObtenido);
-		assertEquals(valorEsperado, valorObtenido);
-	}
 
 	public static void containsText(WebDriver driver, By by, String valorEsperado) {
 		String valorObtenido = getText(driver, by);
@@ -534,27 +525,6 @@ public class ActionsUtil {
 		jse.executeScript(script);
 	}
 
-//	public static void waitForXElements(WebDriver driver, By by, String condicion, int cantidad) {
-//		ScriptEngineManager manager = new ScriptEngineManager();
-//		ScriptEngine se = manager.getEngineByName("JavaScript");
-//		driver.manage().timeouts().implicitlyWait(100, TimeUnit.MILLISECONDS);
-//		boolean brakeLoop = false;
-//		for (int second = 0; second <= 60; second++) {
-//			try {
-//				int cantObtenida = driver.findElements(by).size();
-//				Object result = se.eval(cantObtenida + " " + condicion + " " + cantidad);
-//				if (result.equals(true)) {
-//					brakeLoop = true;
-//				}
-//			} catch (Exception e) {
-//				sleepMiliseconds(1);
-//			}
-//			sleepMiliseconds(100);
-//			if (brakeLoop)
-//				break;
-//		}
-//		driver.manage().timeouts().implicitlyWait(TIMEOUTS, TimeUnit.MILLISECONDS);
-//	}
 
 	private static ExpectedCondition<Boolean> getConditionWait(By objeto, String atributo, String valor) {
 		ExpectedCondition<Boolean> condicion = null;
@@ -739,14 +709,6 @@ public class ActionsUtil {
 		return hostComponent.toString();
 	}
 
-	public static void curretCompareURL(WebDriver driver, String urlExpected) {
-		String currenturl = driver.getCurrentUrl();
-		urlExpected = urlExpected.split("\\?")[0];
-		currenturl = currenturl.split("\\?")[0];
-		currenturl = replaceHost(currenturl, urlExpected);
-		assertEquals(urlExpected, currenturl);
-	}
-
 	public static void switchWindowsTab(WebDriver driver, int indexTab) {
 		driver.getWindowHandles();
 		Set<String> currentHandlers = driver.getWindowHandles();
@@ -797,26 +759,6 @@ public class ActionsUtil {
 
 	}
 
-	public static void borrarCookies(WebDriver driver) {
-		driver.manage().deleteAllCookies();
-	}
-
-	public static String getSubString(WebDriver driver, By by, int strInit, int strEnd) {
-		return getText(driver, by).substring(strInit, strEnd);
-	}
-
-	public static String encrypt(String data) {
-		byte[] keyBytes = getKeyBytes();
-		byte[] byteData = getDataBytes(data);
-
-		try {
-			byte[] resultado = aesEncryptExternKey(byteData, keyBytes);
-			return Base64.getEncoder().encodeToString(resultado);
-		} catch (Exception e) {
-			LOGGER.error("Error al encriptar Base64: ", e);
-			return "";
-		}
-	}
 
 	static byte[] getKeyBytes() {
 		final int KEY_LENGHT = 16;
@@ -915,24 +857,11 @@ public class ActionsUtil {
 		}
 	}
 
-	public static void takeSnapShot(WebDriver webdriver, String fileWithoutPath) {
-		try {
-			TakesScreenshot scrShot = ((TakesScreenshot) webdriver);
-			File SrcFile = scrShot.getScreenshotAs(OutputType.FILE);
-			String path = System.getProperty("user.dir") + "\\target\\evidences\\" + fileWithoutPath;
-			File DestFile = new File(path);
-			DestFile.getParentFile().mkdirs();
-			FileUtils.copyFile(SrcFile, DestFile);
-		} catch (Exception e) {
-			LOGGER.error("Error tomado la foto para envio de pruebas: ", e);
-		}
-
-	}
 
 	public static void validarEstilo(WebDriver driver, By by, String estilo) {
 		WebElement element = driver.findElement(by);
 		String style = element.getAttribute("style");
-		assertFalse(style + " no contiene: " + estilo,style.trim().contains(estilo));
+		assertFalse(style + " no contiene: " + estilo, style.trim().contains(estilo));
 	}
 
 	public static void verificarVisible(WebDriver driver, By objetoToAction) {
@@ -947,7 +876,43 @@ public class ActionsUtil {
 		JavascriptExecutor js = (JavascriptExecutor) driver;
 		js.executeScript(comandoExecute, element, originalClass);
 		sleepMiliseconds(5);
-		
+
+	}
+
+	public static final String SEPARADOR = ",";
+
+	public static void leerArchivo() {
+
+		BufferedReader bufferLectura = null;
+		try {
+			// Abrir el .csv en buffer de lectura
+			bufferLectura = new BufferedReader(new FileReader("country-2021-01-07.csv"));
+
+			// Leer una linea del archivo
+			String linea = bufferLectura.readLine();
+
+			while (linea != null) {
+				// Sepapar la linea leída con el separador definido previamente
+				String[] campos = linea.split(SEPARADOR);
+
+				System.out.println(Arrays.toString(campos));
+
+				// Volver a leer otra línea del fichero
+				linea = bufferLectura.readLine();
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			// Cierro el buffer de lectura
+			if (bufferLectura != null) {
+				try {
+					bufferLectura.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+
 	}
 
 }

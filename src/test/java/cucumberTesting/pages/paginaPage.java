@@ -5,12 +5,13 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cucumberTesting.objects.PaginaObjects;
+//import cucumberTesting.objects.PaginaObjects;
 import cucumberTesting.utilities.ActionsUtil;
 import net.thucydides.core.annotations.DefaultUrl;
 
 
-@DefaultUrl("https://amrs-dev.engkantar.com/#/login")
+
+@DefaultUrl("https://amrs-dev.engkantar.com/")
 public class PaginaPage extends BasePage {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(PaginaPage.class);
@@ -18,7 +19,6 @@ public class PaginaPage extends BasePage {
 	public PaginaPage() {
 		if (ActionsUtil.objetosIsEmpty()) {
 			LOGGER.info("Inicialización de objetos");
-			new PaginaObjects();
 		}
 	}
 
@@ -69,21 +69,7 @@ public class PaginaPage extends BasePage {
 
 	}
 
-	public void inicioSesionyTerminos(String usuario, String contrasena) {
-		//String lbliniciosesion = "lbliniciosesion";
-		String txtcorreoiniciosesion = "txtcorreoiniciosesion";
-		String txtcontrasenainiciosesion= "txtcontrasena";
-		String btniniciarsesion = "btniniciarsesion";
-		String checkterminos = "checkterminosycondiciones";
-		
-		//clic(lbliniciosesion);
-		escribirTexto(txtcorreoiniciosesion, usuario);
-		escribirTexto(txtcontrasenainiciosesion, contrasena);
-		estadoCheckbox(checkterminos);
-		clic(btniniciarsesion);
-				
-	}
-
+	
 	public void inicioSesion(String usuario, String contrasena) {
 		String lbliniciosesion = "lbliniciosesion";
 		String txtcorreoiniciosesion = "txtcorreoiniciosesion";
@@ -101,6 +87,21 @@ public class PaginaPage extends BasePage {
 	public void eliminarAtributo(String elemento, String atributo) {
 		sharedObjet(elemento);
 		ActionsUtil.removeAttribute(getDriver(), getObjetoToAction(), atributo);	
+		
+	}
+	
+	public void login() {
+		sharedObjet("Usuario");
+		ActionsUtil.setTextField(getDriver(), getObjetoToAction(), "testqa");
+		sharedObjet("Contrasena");
+		ActionsUtil.setTextField(getDriver(), getObjetoToAction(), "#testqa@");
+		sharedObjet("Boton Login");
+		ActionsUtil.clic(getDriver(), getObjetoToAction());
+
+	}
+	
+	public void verificarArchivo() {
+		ActionsUtil.leerArchivo();
 		
 	}
 
